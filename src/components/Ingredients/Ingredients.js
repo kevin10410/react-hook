@@ -7,6 +7,8 @@ import Search from './Search';
 
 const Ingredients = () => {
   const [ ingredients, setIngredients ] = useState([]);
+  const [ filter, setFilter ] = useState('');
+  const [ displayIngredients, setDisplayIngredients] = useState([]);
 
   const fetchIngredient = () => {
     axios.get('/ingredients')
@@ -24,6 +26,10 @@ const Ingredients = () => {
       .catch(err => console.log(err));
   };
 
+  const updateFilterHandler = value => {
+    setFilter(value);
+  };
+
   const removeIngredientHandler = id => {
     console.log(id);
   };
@@ -32,15 +38,25 @@ const Ingredients = () => {
     fetchIngredient();
   }, []);
 
+  useEffect(() => {
+    setDisplayIngredients(() => {
+      return ingredients
+        .filter(({ name }) => name.includes(filter));
+    });
+  }, [ingredients, filter]);
+
   return (
     <div className="App">
       <IngredientForm
         addIngredient = { addIngredientHandler }
       />
       <section>
-        <Search />
+        <Search
+          filter = { filter }
+          updateFilter = { updateFilterHandler }
+        />
         <IngredientList
-          ingredients = { ingredients }
+          ingredients = { displayIngredients }
           removeIngredient = { removeIngredientHandler }
         />
       </section>
