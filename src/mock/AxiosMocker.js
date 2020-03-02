@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { mockIngredients } from './mockData';
+import mockIngredients from './mockData';
 
 class AxiosMocker {
   constructor() {
@@ -28,25 +28,37 @@ class AxiosMocker {
   };
 
   mockDeleteRequest() {
-
+    this.mockDeleteIngredient();
   };
 
   mockGetIngredients() {
     this.mock
       .onGet('/ingredients')
-      .reply(200, mockIngredients);
+      .reply(200, mockIngredients.getIngredients());
   };
 
   mockPostIngredient() {
     this.mock
       .onPost('/ingredient')
       .reply(config => {
-        const newIngredient = {
-          ...JSON.parse(config.data),
-          id: mockIngredients.length,
-        };
-        mockIngredients.push(newIngredient);
-        return [200, newIngredient];
+        mockIngredients
+          .addIngredient(JSON.parse(config.data));
+        return [200, mockIngredients.getLastIngredient()];
+      });
+  };
+
+  mockDeleteIngredient() {
+    this.mock
+      .onDelete(/\/ingredient\/\d+/)
+      .reply(config => {
+        const deleteId = config.url
+          .split('/')
+          .pop();
+
+        mockIngredients
+          .deleteIngredient(deleteId);
+
+        return [200];
       });
   };
 };
