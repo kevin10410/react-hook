@@ -9,7 +9,13 @@ const IngredientForm = React.memo(props => {
 
   const submitHandler = event => {
     event.preventDefault();
-    // ...
+    props.addIngredient({ name, amount });
+    clearInputItems();
+  };
+
+  const clearInputItems = () => {
+    setName('');
+    setAmount('');
   };
 
   const updateNameHandler = event => {
