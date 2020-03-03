@@ -10,14 +10,17 @@ import {
 
 const Ingredients = () => {
   const [ ingredients, setIngredients ] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const addIngredientHandler = ingredient => {
-    postIngredient(ingredient)
+  const addIngredientHandler = async (ingredient) => {
+     setIsLoading(true);
+    await postIngredient(ingredient)
       .then(res => res.data)
       .then(data => {
         setIngredients(prev => [...prev, data]);
       })
       .catch(err => console.log(err));
+    setIsLoading(false);
   };
 
   const filterIngredientsHandler = useCallback(filterIngredients => {
@@ -38,6 +41,7 @@ const Ingredients = () => {
   return (
     <div className="App">
       <IngredientForm
+        isLoading = { isLoading }
         addIngredient = { addIngredientHandler }
       />
       <section>

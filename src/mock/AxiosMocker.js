@@ -5,7 +5,7 @@ import mockIngredients from './mockData';
 
 class AxiosMocker {
   constructor() {
-    this.mock = new MockAdapter(axios);
+    this.mock = new MockAdapter(axios, { delayResponse: 200 });
   };
 
   start() {
