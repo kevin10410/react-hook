@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useReducer } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
@@ -8,8 +8,24 @@ import {
   deleteIngredient,
 } from '../../api/ingredientService';
 
+const reducerIngredients = (state, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case 'SET':
+      return [...payload];
+    case 'ADD':
+      return [...state, payload];
+    case 'DELETE':
+      return state
+        .filter(item => item.id !== action.payload);
+    default:
+      return state;
+  };
+};
+
 const Ingredients = () => {
-  const [ ingredients, setIngredients ] = useState([]);
+  const [ingredients, dispatchIngredients] = useReducer(reducerIngredients, []);
   const [isLoading, setIsLoading] = useState(false);
 
   const addIngredientHandler = async (ingredient) => {
@@ -17,21 +33,30 @@ const Ingredients = () => {
     await postIngredient(ingredient)
       .then(res => res.data)
       .then(data => {
-        setIngredients(prev => [...prev, data]);
+        dispatchIngredients({
+          type: 'ADD',
+          payload: data,
+        });
       })
       .catch(err => console.log(err));
     setIsLoading(false);
   };
 
   const filterIngredientsHandler = useCallback(filterIngredients => {
-    setIngredients(filterIngredients);
-  }, [setIngredients]);
+    dispatchIngredients({
+      type: 'SET',
+      payload: filterIngredients,
+    });
+  }, [dispatchIngredients]);
 
   const removeIngredientHandler = id => {
     deleteIngredient(id)
       .then(res => res.data)
       .then(data => {
-        setIngredients([...data])
+        dispatchIngredients({
+          type: 'SET',
+          payload: data,
+        });
       })
       .catch(err => {
         console.log(err);
