@@ -75,7 +75,7 @@ class AxiosMocker {
         mockIngredients
           .deleteIngredient(deleteId);
 
-        return [200];
+        return [200, mockIngredients.getIngredients()];
       });
   };
 };
