@@ -5,6 +5,7 @@ import IngredientList from './IngredientList';
 import Search from './Search';
 import {
   postIngredient,
+  deleteIngredient,
 } from '../../api/ingredientService';
 
 const Ingredients = () => {
@@ -24,7 +25,14 @@ const Ingredients = () => {
   }, [setIngredients]);
 
   const removeIngredientHandler = id => {
-    console.log(id);
+    deleteIngredient(id)
+      .then(res => res.data)
+      .then(data => {
+        setIngredients([...data])
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   return (
