@@ -1,24 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
 import Search from './Search';
+import {
+  fetchIngredients,
+  postIngredient,
+} from '../../api/ingredientService';
 
 const Ingredients = () => {
   const [ ingredients, setIngredients ] = useState([]);
-  const [ filter, setFilter ] = useState('');
-  const [ displayIngredients, setDisplayIngredients] = useState([]);
-
-  const fetchIngredient = () => {
-    axios.get('/ingredients')
-      .then(res => res.data)
-      .then(data => { setIngredients(data) })
-      .catch(err => { console.log(err) });
-  };
 
   const addIngredientHandler = ingredient => {
-    axios.post('/ingredient', ingredient)
+    postIngredient(ingredient)
       .then(res => res.data)
       .then(data => {
         setIngredients(prev => [...prev, data]);
@@ -26,24 +20,16 @@ const Ingredients = () => {
       .catch(err => console.log(err));
   };
 
-  const updateFilterHandler = value => {
-    setFilter(value);
-  };
-
   const removeIngredientHandler = id => {
     console.log(id);
   };
 
   useEffect(() => {
-    fetchIngredient();
+    fetchIngredients()
+      .then(res => res.data)
+      .then(data => { setIngredients(data) })
+      .catch(err => { console.log(err) });
   }, []);
-
-  useEffect(() => {
-    setDisplayIngredients(() => {
-      return ingredients
-        .filter(({ name }) => name.includes(filter));
-    });
-  }, [ingredients, filter]);
 
   return (
     <div className="App">
@@ -51,12 +37,9 @@ const Ingredients = () => {
         addIngredient = { addIngredientHandler }
       />
       <section>
-        <Search
-          filter = { filter }
-          updateFilter = { updateFilterHandler }
-        />
+        <Search />
         <IngredientList
-          ingredients = { displayIngredients }
+          ingredients = { ingredients }
           removeIngredient = { removeIngredientHandler }
         />
       </section>
