@@ -17,6 +17,7 @@ class AxiosMocker {
 
   mockGetRequest() {
     this.mockGetIngredients();
+    this.mockGetFilteredIngredients();
   };
 
   mockPostRequest() {
@@ -35,6 +36,22 @@ class AxiosMocker {
     this.mock
       .onGet('/ingredients')
       .reply(200, mockIngredients.getIngredients());
+  };
+
+  mockGetFilteredIngredients() {
+    this.mock
+      .onGet(/\/ingredients\/\w?/)
+      .reply(config => {
+        const filter = config.url
+          .split('/')
+          .pop();
+        
+          return [
+            200,
+            mockIngredients.getIngredients()
+              .filter(ingredient => ingredient.name.includes(filter))
+          ]
+      });
   };
 
   mockPostIngredient() {
