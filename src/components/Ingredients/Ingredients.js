@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
 import Search from './Search';
 import {
-  fetchIngredients,
   postIngredient,
 } from '../../api/ingredientService';
 
@@ -27,13 +26,6 @@ const Ingredients = () => {
   const removeIngredientHandler = id => {
     console.log(id);
   };
-
-  useEffect(() => {
-    fetchIngredients()
-      .then(res => res.data)
-      .then(data => { setIngredients(data) })
-      .catch(err => { console.log(err) });
-  }, []);
 
   return (
     <div className="App">
