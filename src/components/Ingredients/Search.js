@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Card from '../UI/Card';
 import './Search.css';
+import {
+  fetchFilteredIngredients,
+} from '../../api/ingredientService';
 
 const Search = React.memo(props => {
+  const { onLoadIngredients } = props;
+  const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    fetchFilteredIngredients(filter)
+      .then(res => res.data)
+      .then(data => {
+        onLoadIngredients(data);
+      })
+      .catch(err => { console.log(err) });
+  }, [filter, onLoadIngredients]);
+
   return (
     <section className="search">
       <Card>
@@ -11,8 +26,8 @@ const Search = React.memo(props => {
           <label>Filter by Title</label>
           <input
             type="text"
-            value={ props.filter }
-            onChange={ event => { props.updateFilter(event.target.value) }} 
+            value={ filter }
+            onChange={ event => { setFilter(event.target.value) }} 
           />
         </div>
       </Card>
