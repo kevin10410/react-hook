@@ -1,7 +1,6 @@
 import React, {
   useState,
   useCallback,
-  useReducer,
   useMemo,
 } from 'react';
 
@@ -12,25 +11,14 @@ import {
   postIngredient,
   deleteIngredient,
 } from '../../api/ingredientService';
-
-const reducerIngredients = (state, action) => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case 'SET':
-      return [...payload];
-    case 'ADD':
-      return [...state, payload];
-    case 'DELETE':
-      return state
-        .filter(item => item.id !== action.payload);
-    default:
-      return state;
-  };
-};
+import useIngredients from '../../hooks/ingredientsHooks';
 
 const Ingredients = () => {
-  const [ingredients, dispatchIngredients] = useReducer(reducerIngredients, []);
+  const {
+    ingredients,
+    addIngredient,
+    setIngredients,
+  } = useIngredients();
   const [isLoading, setIsLoading] = useState(false);
 
   const addIngredientHandler = async (ingredient) => {
@@ -38,35 +26,29 @@ const Ingredients = () => {
     await postIngredient(ingredient)
       .then(res => res.data)
       .then(data => {
-        dispatchIngredients({
-          type: 'ADD',
-          payload: data,
-        });
+        addIngredient(data);
       })
       .catch(err => console.log(err));
     setIsLoading(false);
   };
 
-  const filterIngredientsHandler = useCallback(filterIngredients => {
-    dispatchIngredients({
-      type: 'SET',
-      payload: filterIngredients,
-    });
-  }, [dispatchIngredients]);
+  const filterIngredientsHandler = useCallback(
+    filterIngredients => {
+      setIngredients(filterIngredients);
+    },
+    [setIngredients],
+  );
 
-  const removeIngredientHandler = id => {
+  const removeIngredientHandler = useCallback(id => {
     deleteIngredient(id)
       .then(res => res.data)
       .then(data => {
-        dispatchIngredients({
-          type: 'SET',
-          payload: data,
-        });
+        setIngredients(data);
       })
       .catch(err => {
         console.log(err);
       });
-  };
+  }, [setIngredients]);
 
   return (
     <div className="App">
@@ -84,7 +66,7 @@ const Ingredients = () => {
               ingredients = { ingredients }
               removeIngredient = { removeIngredientHandler }
             />
-          ), [ingredients])
+          ), [ingredients, removeIngredientHandler])
         }
       </section>
     </div>
