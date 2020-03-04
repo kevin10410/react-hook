@@ -1,4 +1,9 @@
-import React, { useState, useCallback, useReducer } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useReducer,
+  useMemo,
+} from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
@@ -73,10 +78,14 @@ const Ingredients = () => {
         <Search
           onLoadIngredients = { filterIngredientsHandler }
         />
-        <IngredientList
-          ingredients = { ingredients }
-          removeIngredient = { removeIngredientHandler }
-        />
+        {
+          useMemo(() => (
+            <IngredientList
+              ingredients = { ingredients }
+              removeIngredient = { removeIngredientHandler }
+            />
+          ), [ingredients])
+        }
       </section>
     </div>
   );
